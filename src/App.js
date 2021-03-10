@@ -17,6 +17,7 @@ const orders = [
   { type: "SELL", price: 51.505, shares: 5 },
   { type: "SELL", price: 79.9, shares: 3 },
   { type: "SELL", price: 108, shares: 4 },
+  { type: "SELL", price: 198, shares: 9 },
   { type: "BUY", price: 80, shares: 3 },
   { type: "BUY", price: 80.4999, shares: 1 },
   { type: "BUY", price: 97.56, shares: 3 },
@@ -24,6 +25,7 @@ const orders = [
   { type: "BUY", price: 148, shares: 3 },
   { type: "BUY", price: 223, shares: 2 },
   { type: "BUY", price: 224, shares: 1 },
+  { type: "BUY", price: 275, shares: 6 },
   { type: "BUY", price: 293, shares: 7 },
 ];
 
