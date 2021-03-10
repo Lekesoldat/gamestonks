@@ -1,5 +1,16 @@
+import {
+  Container,
+  Image,
+  Stat,
+  StatArrow,
+  StatGroup,
+  StatHelpText,
+  StatLabel,
+  StatNumber,
+} from "@chakra-ui/react";
 import _ from "lodash";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import wsbbanner from "./assets/WallStreetBets.png";
 
 const orders = [
   { type: "SELL", price: 51.505, shares: 5 },
@@ -45,12 +56,14 @@ export default function App() {
     return () => ws.close();
   }, []);
 
-  // const { displayName, prevClose, price } = state;
-  const { price } = state;
+  console.log(state);
+  const { ticker, displayName, prevClose, price } = state;
 
   if (!price) {
     return "No price data available.";
   }
+
+  const priceChange = price > prevClose;
 
   const buyOrders = orders.filter((x) => x.type === "BUY");
   const sellOrders = orders.filter((x) => x.type === "SELL");
@@ -64,15 +77,34 @@ export default function App() {
     _.sum(sellOrders.map((x) => x.shares));
 
   const minSellPrice = valueInMarket / sharesInMarket;
-  const revenue = (price - minSellPrice) * sharesInMarket;
+  const revenue = ((price - minSellPrice) * sharesInMarket).toFixed(2);
 
   document.title = `$${price.toFixed(2)} | ${(revenue * USD_NOK).toFixed(
     2
   )} NOK `;
 
   return (
-    <>
-      <h1>{revenue}</h1>
-    </>
+    <Container>
+      <Image src={wsbbanner} alt="WSB Banner" />
+      <StatGroup>
+        <Stat>
+          <StatLabel>{ticker}</StatLabel>
+          <StatNumber>$ {price.toFixed(2)}</StatNumber>
+          <StatHelpText>
+            <StatArrow type={priceChange ? "increase" : "decrease"} />
+            {(((price - prevClose) / prevClose) * 100).toFixed(2)} %
+          </StatHelpText>
+        </Stat>
+
+        <Stat>
+          <StatLabel>Revenue</StatLabel>
+          <StatNumber>$ {revenue}</StatNumber>
+          <StatHelpText>
+            <StatArrow type={revenue > 0 ? "increase" : "decrease"} />
+            {(revenue * USD_NOK).toFixed(2)} NOK
+          </StatHelpText>
+        </Stat>
+      </StatGroup>
+    </Container>
   );
 }
