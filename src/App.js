@@ -57,7 +57,7 @@ export default function App() {
   }, []);
 
   console.log(state);
-  const { ticker, displayName, prevClose, price } = state;
+  const { ticker, prevClose, price } = state;
 
   if (!price) {
     return "No price data available.";
