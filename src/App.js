@@ -1,4 +1,5 @@
 import {
+  Box,
   Container,
   Image,
   Stat,
@@ -86,10 +87,21 @@ export default function App() {
   return (
     <Container>
       <Image src={wsbbanner} alt="WSB Banner" />
-      <StatGroup>
+      {minSellPrice > price && (
+        <Box boxShadow="xs" p="6" rounded="md" bg="white">
+          <Stat>
+            <StatLabel>Price needed to hit zero</StatLabel>
+            <StatNumber>${minSellPrice.toFixed(2)}</StatNumber>
+            <StatHelpText>
+              Only ${(minSellPrice - price).toFixed(2)} left!
+            </StatHelpText>
+          </Stat>
+        </Box>
+      )}
+      <StatGroup boxShadow="xs" p="6" rounded="md" bg="white">
         <Stat>
           <StatLabel>{ticker}</StatLabel>
-          <StatNumber>$ {price.toFixed(2)}</StatNumber>
+          <StatNumber>${price.toFixed(2)}</StatNumber>
           <StatHelpText>
             <StatArrow type={priceChange ? "increase" : "decrease"} />
             {(((price - prevClose) / prevClose) * 100).toFixed(2)} %
