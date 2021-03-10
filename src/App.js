@@ -1,9 +1,7 @@
 import _ from "lodash";
 import { useEffect, useState } from "react";
 
-const USD_NOK = 8.57;
-
-const all_orders = [
+const orders = [
   { type: "SELL", price: 51.505, shares: 5 },
   { type: "SELL", price: 79.9, shares: 3 },
   { type: "SELL", price: 108, shares: 4 },
@@ -17,13 +15,7 @@ const all_orders = [
   { type: "BUY", price: 293, shares: 7 },
 ];
 
-const orders = [
-  { buyPrice: 144, total: 1, sellPrice: null },
-  /*{ buyPrice: 148, total: 3 },*/
-  /*{ buyPrice: 223, total: 2 },*/
-  { buyPrice: 224, total: 1, sellPrice: null },
-  { buyPrice: 293, total: 7, sellPrice: null },
-];
+const USD_NOK = 8.57;
 
 const url = "wss://finnhub.io/ws";
 const tickers = ["GME.US"];
@@ -47,81 +39,40 @@ export default function App() {
 
     ws.onmessage = (ev) => {
       const { content } = JSON.parse(ev.data);
-      console.log("MESSAGE");
       setState((state) => ({ ...state, ...content }));
     };
 
     return () => ws.close();
   }, []);
 
-  const { displayName, prevClose, price } = state;
+  // const { displayName, prevClose, price } = state;
+  const { price } = state;
 
   if (!price) {
-    return null;
+    return "No price data available.";
   }
 
-  const positive = price > prevClose;
+  const buyOrders = orders.filter((x) => x.type === "BUY");
+  const sellOrders = orders.filter((x) => x.type === "SELL");
 
-  const moneySpent = _.sum(
-    all_orders.filter((x) => x.type === "BUY").map((x) => x.price * x.shares)
-  );
+  const valueInMarket =
+    _.sum(buyOrders.map((x) => x.price * x.shares)) -
+    _.sum(sellOrders.map((x) => x.price * x.shares));
 
-  const moneyReturned = _.sum(
-    all_orders.filter((x) => x.type === "SELL").map((x) => x.price * x.shares)
-  );
+  const sharesInMarket =
+    _.sum(buyOrders.map((x) => x.shares)) -
+    _.sum(sellOrders.map((x) => x.shares));
 
-  const sharesInMarket = _.sum(
-    all_orders.map((x) => (x.type === "BUY" ? x.shares : -x.shares))
-  );
+  const minSellPrice = valueInMarket / sharesInMarket;
+  const revenue = (price - minSellPrice) * sharesInMarket;
 
-  const totalRevenue = moneyReturned - moneySpent;
-
-  let priceToZero = null;
-  if (totalRevenue < 0) {
-    priceToZero = -(totalRevenue / sharesInMarket);
-  }
-
-  let opt = "";
-  if (priceToZero > price) {
-    opt = `If you sell now you have lost $${(
-      totalRevenue +
-      sharesInMarket * price
-    ).toFixed(2)}. You need to sell at ${priceToZero.toFixed(2)} to hit 0.`;
-  }
-
-  if (priceToZero <= price) {
-    opt = `If you sell now you have earned $${(
-      totalRevenue +
-      sharesInMarket * price
-    ).toFixed(2)}`;
-  }
-
-  // document.title = `$${price.toFixed(2)} | ${(totalProfit * USD_NOK).toFixed(
-  //   2
-  // )} NOK `;
+  document.title = `$${price.toFixed(2)} | ${(revenue * USD_NOK).toFixed(
+    2
+  )} NOK `;
 
   return (
     <>
-      <h1>
-        {displayName}:{" "}
-        <span style={{ color: positive ? "green" : "red" }}>
-          ${price.toFixed(2)} {positive ? "😄" : "😔"}
-        </span>
-      </h1>
-      <h1>{opt}</h1>
-      {/* <Trade price={price} USD_NOK={USD_NOK} orders={orders} /> */}
-      {/* 
-      <h1>
-        Total profit is{" "}
-        <span style={{ color: totalProfit > 0 ? "green" : "red" }}>
-          ${totalProfit}
-        </span>{" "}
-        which is{" "}
-        <span style={{ color: totalProfit > 0 ? "green" : "red" }}>
-          {(totalProfit * USD_NOK).toFixed(2)} NOK
-        </span>
-      </h1>
-  */}{" "}
+      <h1>{revenue}</h1>
     </>
   );
 }
