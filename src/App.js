@@ -85,10 +85,10 @@ export default function App() {
   )} NOK `;
 
   return (
-    <Container>
+    <Container centerContent>
       <Image src={wsbbanner} alt="WSB Banner" />
       {minSellPrice > price && (
-        <Box boxShadow="xs" p="6" rounded="md" bg="white">
+        <Box boxShadow="xs" p="6" rounded="md" bg="white" w="100%">
           <Stat>
             <StatLabel>Price needed to hit zero</StatLabel>
             <StatNumber>${minSellPrice.toFixed(2)}</StatNumber>
@@ -98,7 +98,7 @@ export default function App() {
           </Stat>
         </Box>
       )}
-      <StatGroup boxShadow="xs" p="6" rounded="md" bg="white">
+      <StatGroup boxShadow="xs" p="6" rounded="md" bg="white" w="100%">
         <Stat>
           <StatLabel>{ticker}</StatLabel>
           <StatNumber>${price.toFixed(2)}</StatNumber>
