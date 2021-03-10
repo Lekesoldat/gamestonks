@@ -100,6 +100,7 @@ export default function App() {
           </Stat>
         </Box>
       )}
+
       <StatGroup boxShadow="xs" p="6" rounded="md" bg="white" w="100%">
         <Stat>
           <StatLabel>{ticker}</StatLabel>
